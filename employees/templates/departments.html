@@ -1,0 +1,355 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background: #0f172a;
+            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+        }
+
+        .navbar-vertical {
+            background: #111827;
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .page-wrapper {
+            background:
+                radial-gradient(circle at top left, rgba(32, 107, 196, 0.18), transparent 30%),
+                radial-gradient(circle at top right, rgba(245, 159, 0, 0.14), transparent 28%),
+                #0f172a;
+            min-height: 100vh;
+        }
+
+        .page-pretitle {
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+            color: #64748b !important;
+        }
+
+        .page-title {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            color: #94a3b8;
+            font-size: 15px;
+            margin-top: 4px;
+        }
+
+        /* ===== SUMMARY STRIP ===== */
+        .summary-card {
+            background: rgba(17, 24, 39, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 22px 26px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+        }
+
+        .summary-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .summary-label {
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #f8fafc;
+            letter-spacing: -0.02em;
+        }
+
+        /* ===== DEPARTMENT CARDS ===== */
+        .dept-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .dept-card {
+            background: rgba(17, 24, 39, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+            transition: all .3s cubic-bezier(.2,.8,.2,1);
+            height: 100%;
+        }
+
+        .dept-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(139, 188, 255, 0.35);
+            box-shadow: 0 30px 80px rgba(32, 107, 196, .28);
+        }
+
+        .dept-card::after {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--dept-glow);
+            filter: blur(30px);
+            opacity: .5;
+            pointer-events: none;
+        }
+
+        .dept-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dept-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 20px;
+            background: var(--dept-gradient);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        }
+
+        .dept-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #64748b;
+            transition: .25s;
+        }
+
+        .dept-card:hover .dept-arrow {
+            background: rgba(32, 107, 196, 0.18);
+            border-color: #206bc4;
+            color: #8bbcff;
+            transform: translateX(3px);
+        }
+
+        .dept-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #f8fafc;
+            text-transform: capitalize;
+            letter-spacing: -0.01em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dept-count-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-top: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dept-count {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #f8fafc;
+        }
+
+        .dept-count-label {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .dept-bar-track {
+            width: 100%;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            margin-top: 18px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dept-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--dept-gradient);
+        }
+
+        .dept-share {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .empty-state {
+            background: rgba(17, 24, 39, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            text-align: center;
+            padding: 70px 20px;
+            color: #94a3b8;
+        }
+
+        .logout-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-weight: 700;
+            border-radius: 14px;
+            text-decoration: none;
+            box-shadow: 0 12px 35px rgba(220, 38, 38, .35);
+            transition: .3s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-3px);
+            color: white;
+        }
+    </style>
+</head>
+<body data-bs-theme="dark">
+    <div class="page">
+        {% include 'sidebar.html' %}
+
+        <div class="page-wrapper">
+            <div class="page-header d-print-none">
+                <div class="container-xl">
+                    <div class="page-pretitle">OVERVIEW</div>
+                    <h2 class="page-title text-white">Departments</h2>
+                    <p class="page-subtitle">
+                        Workforce distribution across every department in your organization.
+                    </p>
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="container-xl">
+
+                    <!-- SUMMARY STRIP -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="summary-card">
+                                <div class="summary-icon" style="background:linear-gradient(135deg,#206bc4,#4299e1);">🏢</div>
+                                <div>
+                                    <div class="summary-label">Departments</div>
+                                    <div class="summary-value">{{ department_data|length }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="summary-card">
+                                <div class="summary-icon" style="background:linear-gradient(135deg,#2fb344,#36d399);">👥</div>
+                                <div>
+                                    <div class="summary-label">Total Employees</div>
+                                    <div class="summary-value">{{ total_employees }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DEPARTMENT CARDS -->
+                    <div class="row row-deck row-cards g-3">
+
+                        {% for row in department_data %}
+                        {% cycle 'linear-gradient(135deg,#206bc4,#4299e1)' 'linear-gradient(135deg,#2fb344,#36d399)' 'linear-gradient(135deg,#f59f00,#f7c948)' 'linear-gradient(135deg,#a855f7,#d946ef)' 'linear-gradient(135deg,#d63939,#ff6b81)' 'linear-gradient(135deg,#06b6d4,#3b82f6)' as dept_gradient silent %}
+                        <div class="col-sm-6 col-lg-4 col-xl-3">
+                            <a href="{% url 'home' %}?department={{ row.department }}" class="dept-link">
+                                <div class="dept-card" style="--dept-gradient:{{ dept_gradient }}; --dept-glow:{{ dept_gradient }};">
+
+                                    <div class="dept-top">
+                                        <div class="dept-icon">
+                                            {{ row.department|first|upper }}
+                                        </div>
+                                        <div class="dept-arrow">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                <polyline points="12 5 19 12 12 19"></polyline>
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    <div class="dept-name">
+                                        {{ row.department|default:"Unassigned" }}
+                                    </div>
+
+                                    <div class="dept-count-row">
+                                        <div class="dept-count">{{ row.total }}</div>
+                                        <div class="dept-count-label">employee{{ row.total|pluralize }}</div>
+                                    </div>
+
+                                    <div class="dept-bar-track">
+                                        <div class="dept-bar-fill" style="width: {% widthratio row.total total_employees 100 %}%;"></div>
+                                    </div>
+
+                                    <div class="dept-share">
+                                        {% widthratio row.total total_employees 100 %}% of workforce
+                                    </div>
+
+                                </div>
+                            </a>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="empty-state">
+                                No departments found yet. Add an employee to get started.
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="text-end p-4">
+                        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

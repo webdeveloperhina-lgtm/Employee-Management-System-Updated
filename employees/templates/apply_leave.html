@@ -1,0 +1,143 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(32, 107, 196, 0.25), transparent 30%),
+                radial-gradient(circle at 80% 20%, rgba(245, 159, 0, 0.16), transparent 25%),
+                #0f172a;
+        }
+
+        .form-card {
+            background: rgba(17, 24, 39, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+        }
+
+        .form-control {
+            background: #111827;
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .form-control:focus {
+            background: #111827;
+            color: #fff;
+            border-color: #206bc4;
+            box-shadow: 0 0 0 4px rgba(32, 107, 196, 0.18);
+        }
+
+        .brand-circle {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #206bc4, #4299e1);
+            color: white;
+            font-weight: 800;
+            font-size: 22px;
+        }
+
+        .field-error {
+            color: #ff6b81;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, .12);
+            border: 1px solid rgba(239, 68, 68, .35);
+            color: #ff8a8a;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body data-bs-theme="dark">
+    <div class="page">
+        {% include 'sidebar.html' %}
+        <div class="page-wrapper">
+            <div class="page page-center">
+                <div class="container container-tight py-4">
+            <div class="text-center mb-4">
+                <div class="brand-circle mx-auto mb-3">LV</div>
+                <h1 class="text-white mb-1">{{ title }}</h1>
+                <p class="text-secondary">Applying leave for <strong>{{ employee.name }}</strong></p>
+            </div>
+
+            <div class="card form-card">
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert-error">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Leave Type</label>
+                            {{ form.leave_type }}
+                            {% if form.leave_type.errors %}
+                                <div class="field-error">{{ form.leave_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label class="form-label">From Date</label>
+                                {{ form.from_date }}
+                                {% if form.from_date.errors %}
+                                    <div class="field-error">{{ form.from_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label class="form-label">To Date</label>
+                                {{ form.to_date }}
+                                {% if form.to_date.errors %}
+                                    <div class="field-error">{{ form.to_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Reason</label>
+                            {{ form.reason }}
+                            {% if form.reason.errors %}
+                                <div class="field-error">{{ form.reason.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            {{ button_text }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'home' %}" class="text-secondary">Back to Dashboard</a>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

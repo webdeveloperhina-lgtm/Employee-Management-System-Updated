@@ -1,0 +1,92 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ employee.name }} Performance Reviews</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body { background: #0f172a; }
+        .review-page { min-height: 100vh; background: radial-gradient(circle at 10% 0, rgba(79,70,229,.2), transparent 32%), #0f172a; }
+        .premium-card { background: rgba(17,24,39,.95); border: 1px solid rgba(255,255,255,.08); border-radius: 20px; color: #f8fafc; }
+        .form-control, .form-select { background: #111827; border-color: rgba(255,255,255,.12); color: #fff; }
+        .rating-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+        .score { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 16px; background: linear-gradient(135deg,#206bc4,#4f46e5); color: #fff; font-size: 1.2rem; font-weight: 800; }
+        .review-item { border-bottom: 1px solid rgba(255,255,255,.07); }
+        .review-item:last-child { border-bottom: 0; }
+        .rating-chip { padding: .35rem .65rem; border-radius: 999px; background: rgba(32,107,196,.14); color: #91bdff; font-size: .78rem; }
+        .field-error { color: #ff7b8b; font-size: .8rem; margin-top: .3rem; }
+        @media (max-width: 575.98px) { .rating-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body data-bs-theme="dark">
+<div class="page">
+{% include 'sidebar.html' %}
+<div class="page-wrapper review-page">
+<main class="py-4">
+    <div class="container-xl">
+        <header class="d-flex justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <div class="text-secondary">Performance management</div>
+                <h1 class="text-white mb-1">{{ employee.name }}</h1>
+                <div class="text-secondary">{{ employee.department }} · Review history</div>
+            </div>
+            <a href="{% url 'employee_detail' employee.id %}" class="btn btn-outline-light">Back to Profile</a>
+        </header>
+
+        <div class="row g-4">
+            <div class="col-12 col-xl-4">
+                <section class="card premium-card">
+                    <div class="card-header"><h2 class="card-title">{% if editing_review %}Edit{% else %}New{% endif %} Review</h2></div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            {% if editing_review %}<input type="hidden" name="review_id" value="{{ editing_review.id }}">{% endif %}
+                            <div class="mb-3"><label class="form-label">Review period</label>{{ form.review_period }}{% for e in form.review_period.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+                            <div class="mb-3"><label class="form-label">Review date</label>{{ form.review_date }}{% for e in form.review_date.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+                            <div class="rating-grid mb-3">
+                                <div><label class="form-label">Technical</label>{{ form.technical_rating }}{% for e in form.technical_rating.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+                                <div><label class="form-label">Communication</label>{{ form.communication_rating }}{% for e in form.communication_rating.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+                                <div><label class="form-label">Teamwork</label>{{ form.teamwork_rating }}{% for e in form.teamwork_rating.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+                            </div>
+                            <div class="mb-3"><label class="form-label">Strengths</label>{{ form.strengths }}{% for e in form.strengths.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+                            <div class="mb-3"><label class="form-label">Improvement areas</label>{{ form.improvement_areas }}{% for e in form.improvement_areas.errors %}<div class="field-error">{{ e }}</div>{% endfor %}</div>
+                            <button class="btn btn-primary w-100" type="submit">{% if editing_review %}Update{% else %}Save{% endif %} Review</button>
+                            {% if editing_review %}<a class="btn btn-link w-100 mt-2" href="{% url 'performance_reviews' employee.id %}">Cancel editing</a>{% endif %}
+                        </form>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-12 col-xl-8">
+                <section class="card premium-card">
+                    <div class="card-header d-flex justify-content-between"><h2 class="card-title">Review History</h2><span class="badge bg-blue-lt">{{ reviews|length }} reviews</span></div>
+                    <div>
+                        {% for review in reviews %}
+                        <article class="review-item p-4">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="score">{{ review.overall_rating }}</div>
+                                <div class="flex-fill">
+                                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                                        <div><h3 class="h4 text-white mb-1">{{ review.review_period }}</h3><div class="text-secondary small">{{ review.review_date|date:"d M Y" }} · Reviewed by {{ review.reviewer.username|default:"HR" }}</div></div>
+                                        <div class="d-flex flex-wrap gap-2"><span class="rating-chip">Technical {{ review.technical_rating }}/5</span><span class="rating-chip">Communication {{ review.communication_rating }}/5</span><span class="rating-chip">Teamwork {{ review.teamwork_rating }}/5</span></div>
+                                    </div>
+                                    <div class="row mt-3 g-3"><div class="col-md-6"><div class="text-secondary small text-uppercase">Strengths</div><div>{{ review.strengths }}</div></div><div class="col-md-6"><div class="text-secondary small text-uppercase">Improvement areas</div><div>{{ review.improvement_areas }}</div></div></div>
+                                    <div class="d-flex gap-2 mt-3"><a href="?edit={{ review.id }}" class="btn btn-outline-primary btn-sm">Edit</a><form method="post" action="{% url 'delete_performance_review' review.id %}" onsubmit="return confirm('Delete this review?');">{% csrf_token %}<button class="btn btn-outline-danger btn-sm" type="submit">Delete</button></form></div>
+                                </div>
+                            </div>
+                        </article>
+                        {% empty %}<div class="text-center text-secondary py-5">No performance reviews added yet.</div>{% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+</div>
+<script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

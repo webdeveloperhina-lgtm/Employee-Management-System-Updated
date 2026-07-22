@@ -1,0 +1,483 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Dashboard</title>
+
+<link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+
+<style>
+body{
+    min-height:100vh;
+    margin:0;
+    color:#e5edf8;
+    background:
+        radial-gradient(circle at top left,rgba(32,107,196,.25),transparent 30%),
+        radial-gradient(circle at bottom right,rgba(245,159,0,.15),transparent 25%),
+        #0f172a;
+    overflow-x:hidden;
+}
+
+.dashboard-shell{
+    width:min(100% - 32px, 1240px);
+    margin-inline:auto;
+    padding:32px 0 48px;
+}
+
+.dashboard-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    margin-bottom:28px;
+}
+
+.dashboard-title{
+    margin:0;
+    color:#fff;
+    font-size:clamp(26px, 3vw, 38px);
+    line-height:1.15;
+}
+
+.dashboard-subtitle{
+    margin:6px 0 0;
+    color:#94a3b8;
+}
+
+.glass{
+    background:rgba(17,24,39,.85);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    box-shadow:0 25px 60px rgba(0,0,0,.35);
+    overflow:hidden;
+}
+
+.profile-card{
+    padding:24px;
+}
+
+.profile-grid{
+    display:grid;
+    grid-template-columns:auto minmax(0, 1fr) auto;
+    gap:24px;
+    align-items:center;
+}
+
+.profile-photo-form{
+    width:170px;
+    max-width:100%;
+}
+
+.avatar{
+    width:96px;
+    height:96px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #206bc4;
+    flex:0 0 auto;
+}
+
+.profile-name{
+    margin:0 0 10px;
+    color:#fff;
+    overflow-wrap:anywhere;
+}
+
+.profile-meta{
+    display:grid;
+    gap:6px;
+    color:#94a3b8;
+}
+
+.section-header{
+    padding:22px 24px;
+}
+
+.section-header h3,
+.announcement-card h3{
+    margin:0;
+    font-size:18px;
+}
+
+.stat-card{
+    min-height:120px;
+    padding:22px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.stat-number{
+    margin-top:8px;
+    font-size:clamp(30px, 4vw, 42px);
+    font-weight:800;
+    line-height:1;
+}
+
+.table{
+    color:white;
+    margin-bottom:0;
+}
+
+.table td,
+.table th{
+    padding:14px 16px;
+    vertical-align:middle;
+    white-space:nowrap;
+}
+
+.table td:first-child,
+.table th:first-child{
+    white-space:normal;
+}
+
+.table th{
+    color:#94a3b8;
+    background:rgba(148,163,184,.12);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0;
+}
+
+.action-btn{
+    border-radius:10px;
+    padding:10px 18px;
+    white-space:nowrap;
+}
+
+.task-title{
+    display:block;
+    max-width:420px;
+    overflow-wrap:anywhere;
+}
+
+.task-description{
+    display:block;
+    max-width:520px;
+    white-space:normal;
+    overflow-wrap:anywhere;
+}
+
+@media (max-width: 767.98px){
+    .dashboard-shell{
+        width:min(100% - 20px, 100%);
+        padding:18px 0 28px;
+    }
+
+    .dashboard-header{
+        align-items:flex-start;
+        margin-bottom:18px;
+    }
+
+    .dashboard-title{
+        font-size:24px;
+    }
+
+    .profile-card{
+        padding:18px;
+    }
+
+    .profile-grid{
+        grid-template-columns:1fr;
+        gap:16px;
+        text-align:center;
+    }
+
+    .profile-photo-form{
+        width:100%;
+        display:grid;
+        justify-items:center;
+    }
+
+    .profile-photo-form .form-control{
+        max-width:260px;
+    }
+
+    .avatar{
+        width:88px;
+        height:88px;
+        margin-inline:auto;
+    }
+
+    .stat-card{
+        min-height:96px;
+        padding:18px;
+    }
+
+    .section-header{
+        padding:18px;
+        gap:12px;
+        align-items:flex-start !important;
+        flex-direction:column;
+    }
+
+    .section-header .btn{
+        width:100%;
+    }
+
+    .table{
+        min-width:620px;
+    }
+
+    .attendance-table{
+        min-width:420px;
+    }
+
+    .table td,
+    .table th{
+        padding:12px;
+    }
+}
+
+@media (min-width: 1400px){
+    .dashboard-shell{
+        width:min(100% - 64px, 1320px);
+    }
+}
+</style>
+</head>
+
+<body data-bs-theme="dark">
+<main class="dashboard-shell">
+    <header class="dashboard-header">
+        <div>
+            <h1 class="dashboard-title">Hello, {{ employee.name }}</h1>
+            <p class="dashboard-subtitle">Welcome to your Employee Portal</p>
+        </div>
+
+        <a href="{% url 'logout' %}" class="btn btn-danger action-btn">Logout</a>
+    </header>
+
+    <section class="glass profile-card mb-4">
+        <div class="profile-grid">
+            <div>
+                {% if employee.photo %}
+                    <img src="{{ employee.photo.url }}" class="avatar" alt="{{ employee.name }}">
+                {% else %}
+                    <div class="avatar d-flex align-items-center justify-content-center bg-primary">
+                        {{ employee.name|first }}
+                    </div>
+                {% endif %}
+
+                <form method="POST"
+                      action="{% url 'update_profile_photo' %}"
+                      enctype="multipart/form-data"
+                      class="profile-photo-form mt-2">
+                    {% csrf_token %}
+                    <input type="file" name="photo" class="form-control form-control-sm"
+                           accept="image/*" style="font-size:11px;">
+                    <button type="submit" class="btn btn-sm btn-outline-light w-100 mt-1">
+                        Update Photo
+                    </button>
+                </form>
+            </div>
+
+            <div>
+                <h2 class="profile-name">{{ employee.name }}</h2>
+                <div class="profile-meta">
+                    <span>Email: {{ employee.email }}</span>
+                    <span>Department: {{ employee.department }}</span>
+                </div>
+            </div>
+
+            <div>
+                <span class="badge bg-success p-2">{{ employee.status }}</span>
+            </div>
+        </div>
+    </section>
+
+    {% if announcements %}
+    <section class="glass announcement-card mt-4 p-4">
+        <h3>Announcements</h3>
+        {% for a in announcements %}
+            <div class="mt-3 pb-3" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                <strong class="text-white">{{ a.title }}</strong>
+                <p class="text-secondary mb-1">{{ a.message }}</p>
+                <small class="text-secondary">{{ a.created_at|date:"d M Y" }}</small>
+            </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <section class="row g-3 mt-1">
+        <div class="col-12 col-md-4">
+            <div class="glass stat-card">
+                <div class="text-secondary">Present Days</div>
+                <div class="stat-number text-success">{{ total_present }}</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="glass stat-card">
+                <div class="text-secondary">Absent Days</div>
+                <div class="stat-number text-danger">{{ total_absent }}</div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="glass stat-card">
+                <div class="text-secondary">Pending Leave</div>
+                <div class="stat-number text-warning">{{ pending_leaves }}</div>
+            </div>
+        </div>
+    </section>
+
+    {% if performance_reviews %}
+    <section class="glass mt-4 p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+                <h3 class="mb-1">My Performance Reviews</h3>
+                <div class="text-secondary">Recent feedback shared by HR</div>
+            </div>
+            <span class="badge bg-blue-lt p-2">Average {{ average_performance }}/5</span>
+        </div>
+        <div class="row g-3">
+            {% for review in performance_reviews %}
+            <div class="col-12 col-lg-4">
+                <div class="p-3 h-100" style="border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025);">
+                    <div class="d-flex justify-content-between gap-2 mb-2">
+                        <strong class="text-white">{{ review.review_period }}</strong>
+                        <span class="badge bg-success-lt">{{ review.overall_rating }}/5</span>
+                    </div>
+                    <div class="small text-secondary mb-2">{{ review.review_date|date:"d M Y" }}</div>
+                    <div class="small"><strong>Strengths:</strong> {{ review.strengths|truncatechars:110 }}</div>
+                    <div class="small mt-2 text-secondary"><strong>Improve:</strong> {{ review.improvement_areas|truncatechars:110 }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="glass mt-4">
+        <div class="section-header">
+            <h3>Attendance History</h3>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover attendance-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ record.date }}</td>
+                        <td>
+                            {% if record.status == "Present" %}
+                                <span class="badge bg-success">Present</span>
+                            {% elif record.status == "Absent" %}
+                                <span class="badge bg-danger">Absent</span>
+                            {% else %}
+                                <span class="badge bg-warning">{{ record.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center">No attendance records</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="glass mt-4">
+        <div class="section-header">
+            <h3>My Tasks</h3>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Priority</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in task_records %}
+                    <tr>
+                        <td>
+                            <strong class="task-title">{{ task.title }}</strong>
+                            <small class="text-secondary task-description">{{ task.description }}</small>
+                        </td>
+                        <td>
+                            {% if task.priority == "High" %}
+                                <span class="badge bg-danger">High</span>
+                            {% elif task.priority == "Medium" %}
+                                <span class="badge bg-warning text-dark">Medium</span>
+                            {% else %}
+                                <span class="badge bg-success">Low</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ task.due_date }}</td>
+                        <td>
+                            {% if task.status == "Pending" %}
+                                <span class="badge bg-secondary text-white mb-2">Pending</span><br>
+                                <form method="post" action="{% url 'update_task_status' task.id 'In Progress' %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-sm btn-info">Start</button></form>
+                            {% elif task.status == "In Progress" %}
+                                <span class="badge bg-info text-white mb-2">In Progress</span><br>
+                                <form method="post" action="{% url 'update_task_status' task.id 'Completed' %}" class="d-inline">{% csrf_token %}<button type="submit" class="btn btn-sm btn-success">Complete</button></form>
+                            {% else %}
+                                <span class="badge bg-success">Completed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No Tasks Assigned</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="glass mt-4">
+        <div class="section-header d-flex justify-content-between align-items-center">
+            <h3>Leave Requests</h3>
+            <a href="{% url 'employee_apply_leave' %}" class="btn btn-primary action-btn">+ Apply Leave</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for leave in leave_records %}
+                    <tr>
+                        <td>{{ leave.leave_type }}</td>
+                        <td>{{ leave.from_date }} - {{ leave.to_date }}</td>
+                        <td>{{ leave.status }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">No Leave Request</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

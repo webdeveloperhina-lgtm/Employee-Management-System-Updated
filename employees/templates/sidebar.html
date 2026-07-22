@@ -1,0 +1,188 @@
+{% load static %}
+
+<svg class="d-none" aria-hidden="true" focusable="false">
+    <symbol id="nav-dashboard" viewBox="0 0 24 24">
+        <path d="M4 5a2 2 0 0 1 2-2h5v8H4z"></path>
+        <path d="M13 3h5a2 2 0 0 1 2 2v4h-7z"></path>
+        <path d="M4 13h7v8H6a2 2 0 0 1-2-2z"></path>
+        <path d="M13 11h7v8a2 2 0 0 1-2 2h-5z"></path>
+    </symbol>
+    <symbol id="nav-users" viewBox="0 0 24 24">
+        <path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"></path>
+        <path d="M3 21v-2a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v2"></path>
+        <path d="M16 4a4 4 0 0 1 0 7"></path>
+        <path d="M21 21v-2a5 5 0 0 0-3-4.6"></path>
+    </symbol>
+    <symbol id="nav-activity" viewBox="0 0 24 24">
+        <path d="M4 19h16"></path>
+        <path d="M7 16V9"></path>
+        <path d="M12 16V5"></path>
+        <path d="M17 16v-4"></path>
+    </symbol>
+    <symbol id="nav-tasks" viewBox="0 0 24 24">
+        <path d="M9 6h11"></path>
+        <path d="M9 12h11"></path>
+        <path d="M9 18h11"></path>
+        <path d="M4 6l1 1 2-2"></path>
+        <path d="M4 12l1 1 2-2"></path>
+        <path d="M4 18l1 1 2-2"></path>
+    </symbol>
+    <symbol id="nav-departments" viewBox="0 0 24 24">
+        <path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"></path>
+        <path d="M16 9h2a2 2 0 0 1 2 2v10"></path>
+        <path d="M8 7h4"></path>
+        <path d="M8 11h4"></path>
+        <path d="M8 15h4"></path>
+        <path d="M3 21h18"></path>
+    </symbol>
+    <symbol id="nav-attendance" viewBox="0 0 24 24">
+        <path d="M7 3v4"></path>
+        <path d="M17 3v4"></path>
+        <path d="M4 8h16"></path>
+        <path d="M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"></path>
+        <path d="M8 14l2 2 5-5"></path>
+    </symbol>
+    <symbol id="nav-leave" viewBox="0 0 24 24">
+        <path d="M7 4h10a2 2 0 0 1 2 2v14l-7-3-7 3V6a2 2 0 0 1 2-2z"></path>
+        <path d="M9 9h6"></path>
+        <path d="M9 13h4"></path>
+    </symbol>
+    <symbol id="nav-announcements" viewBox="0 0 24 24">
+        <path d="M4 14h3l8 4V6L7 10H4z"></path>
+        <path d="M7 14v5a2 2 0 0 0 2 2h1"></path>
+        <path d="M18 9a4 4 0 0 1 0 6"></path>
+    </symbol>
+    <symbol id="nav-reports" viewBox="0 0 24 24">
+        <path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+        <path d="M14 3v6h5"></path>
+        <path d="M9 17h6"></path>
+        <path d="M9 13h3"></path>
+    </symbol>
+    <symbol id="nav-collapse" viewBox="0 0 24 24">
+        <path d="M4 6h16"></path>
+        <path d="M4 12h16"></path>
+        <path d="M4 18h16"></path>
+    </symbol>
+</svg>
+
+<aside class="navbar navbar-vertical navbar-expand-lg navbar-dark app-sidebar" id="app-sidebar">
+    <div class="container-fluid">
+        <div class="sidebar-brand-row">
+            <h1 class="navbar-brand navbar-brand-autodark">
+                <span class="sidebar-brand-mark"><img src="{% static 'images/employee-ms-logo.png' %}" alt="Employee MS logo"></span>
+                <span class="sidebar-brand-text">Employee <span style="color:#d6a62c">MS</span></span>
+            </h1>
+
+            <button class="btn btn-icon btn-ghost-light sidebar-collapse-toggle"
+                    type="button"
+                    id="sidebar-collapse-toggle"
+                    aria-label="Collapse sidebar"
+                    title="Collapse sidebar">
+                <svg class="icon sidebar-toggle-icon" aria-hidden="true">
+                    <use href="#nav-collapse"></use>
+                </svg>
+            </button>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navigation" aria-controls="main-navigation" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="main-navigation">
+            <ul class="navbar-nav pt-lg-3">
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'home' %}" title="Dashboard">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-dashboard"></use></svg></span>
+                        <span class="nav-link-title">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'employee_list' or request.resolver_match.url_name == 'add_employee' or request.resolver_match.url_name == 'edit_employee' or request.resolver_match.url_name == 'delete_employee' or request.resolver_match.url_name == 'employee_detail' or request.resolver_match.url_name == 'employee_documents' or request.resolver_match.url_name == 'performance_reviews' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'employee_list' %}" title="Employees">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-users"></use></svg></span>
+                        <span class="nav-link-title">Employees</span>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'audit_logs' %}" title="Activity Log">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-activity"></use></svg></span>
+                        <span class="nav-link-title">Activity Log</span>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'task_list' or request.resolver_match.url_name == 'create_task' or request.resolver_match.url_name == 'edit_task' or request.resolver_match.url_name == 'delete_task' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'task_list' %}" title="Tasks">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-tasks"></use></svg></span>
+                        <span class="nav-link-title">Tasks</span>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'department_list' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'department_list' %}" title="Departments">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-departments"></use></svg></span>
+                        <span class="nav-link-title">Departments</span>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'mark_attendance' or request.resolver_match.url_name == 'attendance_history' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'mark_attendance' %}" title="Attendance">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-attendance"></use></svg></span>
+                        <span class="nav-link-title">Attendance</span>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'leave_list' or request.resolver_match.url_name == 'apply_leave' or request.resolver_match.url_name == 'leave_history' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'leave_list' %}" title="Leave Requests">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-leave"></use></svg></span>
+                        <span class="nav-link-title">Leave Requests</span>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'announcement_list' or request.resolver_match.url_name == 'delete_announcement' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'announcement_list' %}" title="Announcements">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-announcements"></use></svg></span>
+                        <span class="nav-link-title">Announcements</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'export_employees' %}" title="Reports">
+                        <span class="nav-link-icon"><svg class="icon" aria-hidden="true"><use href="#nav-reports"></use></svg></span>
+                        <span class="nav-link-title">Reports</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</aside>
+
+<script>
+(() => {
+    const storageKey = "ems-sidebar-collapsed";
+    const root = document.documentElement;
+    const toggle = document.getElementById("sidebar-collapse-toggle");
+
+    if (localStorage.getItem(storageKey) === "true") {
+        root.classList.add("sidebar-collapsed");
+    }
+
+    if (!toggle) return;
+
+    const syncToggle = () => {
+        const isCollapsed = root.classList.contains("sidebar-collapsed");
+        toggle.setAttribute("aria-label", isCollapsed ? "Expand sidebar" : "Collapse sidebar");
+        toggle.setAttribute("title", isCollapsed ? "Expand sidebar" : "Collapse sidebar");
+    };
+
+    toggle.addEventListener("click", () => {
+        root.classList.toggle("sidebar-collapsed");
+        localStorage.setItem(storageKey, root.classList.contains("sidebar-collapsed"));
+        syncToggle();
+    });
+
+    syncToggle();
+})();
+</script>

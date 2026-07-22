@@ -1,0 +1,56 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Log</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body { background:#0f172a; }
+        .audit-page { min-height:100vh; background:radial-gradient(circle at top left,rgba(32,107,196,.18),transparent 30%),#0f172a; }
+        .premium-card { background:rgba(17,24,39,.95);border:1px solid rgba(255,255,255,.08);border-radius:20px;color:#f8fafc; }
+        .form-select { background:#111827;border-color:rgba(255,255,255,.12);color:#fff; }
+        .timeline-dot { width:12px;height:12px;border-radius:50%;background:#4299e1;box-shadow:0 0 0 5px rgba(66,153,225,.12);flex:0 0 12px;margin-top:.35rem; }
+        .audit-row { border-bottom:1px solid rgba(255,255,255,.07); }
+        .audit-row:last-child { border-bottom:0; }
+    </style>
+</head>
+<body data-bs-theme="dark">
+<div class="page">
+    {% include 'sidebar.html' %}
+    <div class="page-wrapper audit-page">
+        <main class="container-xl py-4">
+            <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+                <div><div class="text-secondary">System accountability</div><h1 class="text-white mb-0">Activity Log</h1></div>
+                <a href="{% url 'home' %}" class="btn btn-outline-light">Dashboard</a>
+            </div>
+            <section class="card premium-card">
+                <div class="card-header">
+                    <form method="get" class="row g-2 w-100">
+                        <div class="col-12 col-md-5"><select class="form-select" name="module"><option value="">All modules</option>{% for module in modules %}<option value="{{ module }}" {% if selected_module == module %}selected{% endif %}>{{ module }}</option>{% endfor %}</select></div>
+                        <div class="col-12 col-md-5"><select class="form-select" name="action"><option value="">All actions</option><option value="CREATE" {% if selected_action == 'CREATE' %}selected{% endif %}>Created</option><option value="UPDATE" {% if selected_action == 'UPDATE' %}selected{% endif %}>Updated</option><option value="DELETE" {% if selected_action == 'DELETE' %}selected{% endif %}>Deleted</option></select></div>
+                        <div class="col-12 col-md-2"><button class="btn btn-primary w-100">Filter</button></div>
+                    </form>
+                </div>
+                <div>
+                    {% for log in logs %}
+                    <article class="audit-row d-flex gap-3 p-4">
+                        <span class="timeline-dot"></span>
+                        <div class="flex-fill">
+                            <div class="d-flex flex-wrap justify-content-between gap-2"><div><span class="badge {% if log.action == 'CREATE' %}bg-success-lt{% elif log.action == 'UPDATE' %}bg-blue-lt{% else %}bg-danger-lt{% endif %}">{{ log.get_action_display }}</span><strong class="ms-2 text-white">{{ log.object_name }}</strong></div><time class="text-secondary small">{{ log.created_at|date:"d M Y, h:i A" }}</time></div>
+                            <div class="text-secondary mt-2">{{ log.description }}</div>
+                            <div class="small mt-2">{{ log.actor.username|default:"System" }} · {{ log.module }}</div>
+                        </div>
+                    </article>
+                    {% empty %}<div class="text-center text-secondary py-5">No matching activities found.</div>{% endfor %}
+                </div>
+                {% if logs.paginator.num_pages > 1 %}<div class="card-footer d-flex justify-content-between align-items-center"><span class="text-secondary">Page {{ logs.number }} of {{ logs.paginator.num_pages }}</span><div class="d-flex gap-2">{% if logs.has_previous %}<a class="btn btn-outline-light btn-sm" href="?page={{ logs.previous_page_number }}&module={{ selected_module }}&action={{ selected_action }}">Previous</a>{% endif %}{% if logs.has_next %}<a class="btn btn-outline-light btn-sm" href="?page={{ logs.next_page_number }}&module={{ selected_module }}&action={{ selected_action }}">Next</a>{% endif %}</div></div>{% endif %}
+            </section>
+        </main>
+    </div>
+</div>
+<script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

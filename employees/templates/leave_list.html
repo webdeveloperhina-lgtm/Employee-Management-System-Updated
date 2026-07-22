@@ -1,0 +1,235 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Requests</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background: #0f172a;
+            overflow-x: hidden;
+        }
+
+        .navbar-vertical {
+            background: #111827;
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .page-wrapper {
+            background:
+                radial-gradient(circle at top left, rgba(32, 107, 196, 0.18), transparent 30%),
+                radial-gradient(circle at top right, rgba(245, 159, 0, 0.14), transparent 28%),
+                #0f172a;
+            min-height: 100vh;
+        }
+
+        .premium-card {
+            background: rgba(17, 24, 39, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #f8fafc;
+            box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+            border-radius: 22px;
+        }
+
+        .table {
+            color: #e5edf7;
+        }
+
+        .table thead th {
+            color: #94a3b8;
+        }
+
+        .employee-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, rgba(32, 107, 196, 0.35), rgba(79, 70, 229, 0.25));
+            border: 1px solid rgba(139, 188, 255, 0.25);
+            color: #8bbcff;
+            font-weight: 800;
+        }
+
+        .attend-btn {
+            padding: 7px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: .25s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .attend-btn.approve {
+            background: rgba(34, 197, 94, .15);
+            color: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .attend-btn.approve:hover {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .attend-btn.reject {
+            background: rgba(239, 68, 68, .15);
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .attend-btn.reject:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .status-badge {
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 159, 0, .15);
+            color: #f59f00;
+        }
+
+        .status-badge.approved {
+            background: rgba(34, 197, 94, .15);
+            color: #22c55e;
+        }
+
+        .status-badge.rejected {
+            background: rgba(239, 68, 68, .15);
+            color: #ef4444;
+        }
+
+        .stat-pill {
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .leave-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+            min-width: max-content;
+        }
+
+        .leave-actions form {
+            margin: 0;
+        }
+
+        @media (max-width: 767.98px) {
+            .stats-row {
+                flex-wrap: wrap;
+            }
+
+            .leave-actions {
+                flex-wrap: wrap;
+                min-width: 190px;
+            }
+        }
+    </style>
+</head>
+<body data-bs-theme="dark">
+    <div class="page">
+
+        {% include 'sidebar.html' %}
+
+        <div class="page-wrapper">
+            <div class="container-xl py-4">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <div class="text-secondary">Leave Management</div>
+                        <h2 class="text-white mb-0">Leave Requests</h2>
+                    </div>
+                    <a href="{% url 'home' %}" class="btn btn-outline-light">Back to Dashboard</a>
+                </div>
+
+                <div class="d-flex gap-3 mb-4 stats-row">
+                    <span class="stat-pill" style="background:rgba(245,159,0,.15); color:#f59f00;">
+                        Pending: {{ pending_count }}
+                    </span>
+                    <span class="stat-pill" style="background:rgba(34,197,94,.15); color:#22c55e;">
+                        Approved: {{ approved_count }}
+                    </span>
+                    <span class="stat-pill" style="background:rgba(239,68,68,.15); color:#ef4444;">
+                        Rejected: {{ rejected_count }}
+                    </span>
+                </div>
+
+                <div class="card premium-card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Leave Type</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for leave in leaves %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            {% if leave.employee.photo %}
+                                                <img src="{{ leave.employee.photo.url }}" alt="{{ leave.employee.name }}"
+                                                    style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.15);">
+                                            {% else %}
+                                                <span class="employee-avatar">{{ leave.employee.name|first|upper }}</span>
+                                            {% endif %}
+                                            <strong>{{ leave.employee.name }}</strong>
+                                        </div>
+                                    </td>
+                                    <td class="text-secondary">{{ leave.leave_type }}</td>
+                                    <td class="text-secondary">{{ leave.from_date }}</td>
+                                    <td class="text-secondary">{{ leave.to_date }}</td>
+                                    <td class="text-secondary">{{ leave.reason|truncatechars:30 }}</td>
+                                    <td>
+                                        <span class="status-badge {{ leave.status|lower }}">{{ leave.status }}</span>
+                                    </td>
+                                    <td>
+                                        {% if leave.status == 'Pending' %}
+                                        <div class="leave-actions">
+                                            <form method="post" action="{% url 'update_leave_status' leave.id 'Approved' %}">{% csrf_token %}<button type="submit" class="attend-btn approve">Approve</button></form>
+                                            <form method="post" action="{% url 'update_leave_status' leave.id 'Rejected' %}">{% csrf_token %}<button type="submit" class="attend-btn reject">Reject</button></form>
+                                        </div>
+                                        {% else %}
+                                            <span class="text-secondary">—</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-secondary py-5">No leave requests found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

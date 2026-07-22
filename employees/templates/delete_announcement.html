@@ -1,0 +1,102 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Announcement</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background: #0f172a;
+        }
+
+        .confirm-page {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(32,107,196,.25), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(214,57,57,.15), transparent 25%),
+                #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glass {
+            background: rgba(17, 24, 39, .92);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: 22px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, .35);
+            padding: 40px;
+            max-width: 460px;
+            width: 100%;
+        }
+
+        .warn-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: rgba(214, 57, 57, .15);
+            border: 1px solid rgba(214, 57, 57, .35);
+            color: #ff6b81;
+            display: grid;
+            place-items: center;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .12);
+            color: #cbd5e1;
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, .1);
+            color: white;
+        }
+    </style>
+</head>
+<body data-bs-theme="dark">
+
+<div class="page">
+{% include 'sidebar.html' %}
+<div class="page-wrapper">
+<main class="confirm-page p-3">
+
+    <div class="glass">
+
+        <div class="warn-icon">⚠️</div>
+
+        <h2 class="text-white mb-2">Delete this announcement?</h2>
+
+        <p class="text-secondary">
+            Are you sure you want to delete
+            <strong class="text-white">{{ announcement.title }}</strong>?
+        </p>
+
+        <form method="POST" class="d-flex gap-2 mt-4">
+            {% csrf_token %}
+
+            <a href="{% url 'announcement_list' %}" class="btn btn-cancel flex-fill">
+                Cancel
+            </a>
+
+            <button type="submit" class="btn btn-danger flex-fill">
+                Delete
+            </button>
+        </form>
+
+    </div>
+
+</main>
+</div>
+</div>
+
+    <script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

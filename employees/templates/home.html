@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management Dashboard</title>
+    <link rel="icon" type="image/png" href="{% static 'images/employee-ms-logo.png' %}">
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        :root { --panel:#101d35; --panel-2:#0d192f; --line:rgba(155,174,211,.24); --muted:#91a0bd; --purple:#7048e8; --blue:#339af0; --green:#20c997; --pink:#f43f6e; --orange:#f59f00; }
+        body { background:#14233e; color:#edf2ff; overflow-x:hidden; }
+        .navbar-vertical { background:#0b1930; border-right:1px solid rgba(255,255,255,.05); }
+        .page-wrapper { min-height:100vh; background:#14233e; }
+        .dashboard-topbar { margin:0 1.25rem; min-height:88px; display:flex; align-items:center; gap:14px; border-bottom:1px solid rgba(255,255,255,.08); }
+        .top-search { position:relative; width:min(360px,100%); }
+        .top-search input { height:46px; padding-left:44px; border:0; border-radius:10px; background:#0c1930; color:#fff; }
+        .top-search svg { position:absolute; left:15px; top:14px; width:18px; color:#7f8eaa; z-index:2; }
+        .top-actions { margin-left:auto; display:flex; gap:10px; align-items:center; }
+        .icon-button { width:44px; height:44px; border:0; border-radius:11px; display:grid; place-items:center; color:#8b5cf6; background:#0b1930; text-decoration:none; }
+        .icon-button svg { width:20px; height:20px; }
+        .dashboard-body { padding:1.5rem 1.25rem 2.5rem; }
+        .welcome { display:flex; justify-content:space-between; align-items:end; margin-bottom:1.25rem; }
+        .welcome h1 { margin:0; font-size:1.55rem; color:#fff; }
+        .welcome p { margin:.35rem 0 0; color:var(--muted); }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:20px; }
+        .panel { background:var(--panel-2); border:1px solid var(--line); border-radius:12px; min-width:0; overflow:hidden; box-shadow:0 12px 35px rgba(2,8,23,.13); }
+        .panel-head { min-height:65px; padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(155,174,211,.16); }
+        .panel-head h2 { margin:0; font-size:1.22rem; font-weight:600; color:#edf2ff; }
+        .panel-body { padding:1.25rem; }
+        .metric { grid-column:span 3; min-height:124px; }
+        .metric-inner { height:100%; padding:1.15rem 1.25rem; display:flex; align-items:center; gap:16px; }
+        .metric.primary { background:linear-gradient(135deg,#4526bd,#146fc9); border-color:#7356ff; }
+        .metric-icon { width:66px; height:66px; flex:0 0 66px; border-radius:50%; display:grid; place-items:center; font-size:1.45rem; font-weight:700; background:#eae4ff; color:#6845df; }
+        .metric-icon svg { width:29px; height:29px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+        .metric-icon.green { background:#e4faf4; color:#078c6f; }
+        .metric-icon.pink { background:#ffdce5; color:#e83061; }
+        .metric-icon.orange { background:#fff0cf; color:#d88700; }
+        .metric-label { color:#cbd4e8; font-size:.98rem; }
+        .metric-value { color:#fff; font-size:1.65rem; font-weight:700; line-height:1.2; margin-top:.2rem; }
+        .ring { --value:0; --ring-color:#65d67b; width:72px; height:72px; border-radius:50%; background:conic-gradient(var(--ring-color) calc(var(--value)*1%),rgba(255,255,255,.2) 0); display:grid; place-items:center; position:relative; flex:0 0 72px; }
+        .ring:after { content:""; position:absolute; inset:7px; background:#4031c8; border-radius:50%; }
+        .ring strong { position:relative; z-index:1; font-size:.9rem; color:#fff; }
+        .attendance-panel { grid-column:span 8; }
+        .task-panel { grid-column:span 4; }
+        .department-panel { grid-column:span 5; }
+        .activity-panel { grid-column:span 7; }
+        .directory-panel { grid-column:span 8; }
+        .announcement-panel { grid-column:span 4; }
+        .chart-wrap { position:relative; height:275px; }
+        .chart-wrap.compact { height:245px; }
+        .quick-stats { display:flex; gap:28px; flex-wrap:wrap; margin-bottom:16px; }
+        .quick-stat span { display:block; font-size:.76rem; color:var(--muted); }
+        .quick-stat strong { font-size:1.25rem; color:#fff; }
+        .dot { width:8px; height:8px; display:inline-block; border-radius:50%; margin-right:6px; }
+        .activity-list,.announcement-list { display:grid; gap:12px; }
+        .activity-item,.announcement-item { display:flex; gap:12px; align-items:flex-start; padding:12px; border:1px solid rgba(255,255,255,.07); border-radius:10px; background:rgba(255,255,255,.025); }
+        .activity-badge { width:38px; height:38px; flex:0 0 38px; border-radius:10px; display:grid; place-items:center; background:rgba(112,72,232,.18); color:#9b7cff; font-weight:700; }
+        .activity-copy { min-width:0; flex:1; }
+        .activity-copy strong { display:block; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .activity-copy p { margin:3px 0 0; color:var(--muted); font-size:.78rem; }
+        .activity-copy time { color:#64748b; font-size:.7rem; }
+        .table { color:#e5edf7; margin:0; }
+        .table thead th { color:#8190ad; border-color:rgba(255,255,255,.08); font-size:.72rem; text-transform:uppercase; }
+        .table td { border-color:rgba(255,255,255,.06); vertical-align:middle; }
+        .employee-avatar { width:38px; height:38px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(135deg,#7048e8,#339af0); color:#fff; font-weight:700; }
+        .employee-photo { width:38px; height:38px; border-radius:50%; object-fit:cover; }
+        .status { display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border-radius:999px; background:rgba(32,201,151,.12); color:#38d9a9; font-size:.72rem; }
+        .status.off { color:#ff6b81; background:rgba(244,63,110,.12); }
+        .panel-link { color:#9b7cff; font-size:.8rem; text-decoration:none; }
+        .empty { color:var(--muted); text-align:center; padding:28px 10px; }
+        .btn-brand { border:0; border-radius:10px; color:#fff; padding:.72rem 1rem; background:linear-gradient(135deg,#7048e8,#845ef7); text-decoration:none; white-space:nowrap; }
+        @media(max-width:1199.98px){ .metric{grid-column:span 6}.attendance-panel,.activity-panel,.directory-panel{grid-column:span 12}.task-panel,.department-panel,.announcement-panel{grid-column:span 6} }
+        @media(max-width:767.98px){ .dashboard-topbar{padding:12px 0;flex-wrap:wrap}.top-search{order:2;width:100%}.top-actions{margin-left:0}.dashboard-grid>*{grid-column:span 12!important}.welcome{align-items:flex-start;gap:14px}.welcome .btn-brand{display:none}.chart-wrap{height:245px}.metric{min-height:110px}.dashboard-body{padding-inline:1rem} }
+    </style>
+</head>
+<body data-bs-theme="dark">
+<div class="page">
+    {% include 'sidebar.html' %}
+    <div class="page-wrapper">
+        <header class="dashboard-topbar">
+            <form method="get" class="top-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                <input class="form-control" name="search" value="{{ request.GET.search|default:'' }}" placeholder="Search employees">
+                {% if request.GET.department %}<input type="hidden" name="department" value="{{ request.GET.department }}">{% endif %}
+            </form>
+            <div class="top-actions">
+                <a class="icon-button" href="{% url 'announcement_list' %}" title="Announcements"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></a>
+                <a class="icon-button" href="{% url 'audit_logs' %}" title="Activity log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19h16M7 16V9m5 7V5m5 11v-4"/></svg></a>
+                <a class="btn-brand" href="{% url 'export_employees' %}">Generate Report</a>
+            </div>
+        </header>
+
+        <main class="dashboard-body">
+            <div class="welcome">
+                <div><h1>Workforce Overview</h1><p>Welcome back, {{ request.user.username }}. Here is what is happening today.</p></div>
+                <a class="btn-brand" href="{% url 'add_employee' %}">+ Add Employee</a>
+            </div>
+
+            <div class="dashboard-grid">
+                <a class="panel metric primary text-decoration-none" href="{% url 'mark_attendance' %}">
+                    <div class="metric-inner"><div class="ring" style="--value:{{ attendance }}"><strong>{{ attendance }}%</strong></div><div><div class="metric-label">Today's Attendance</div><div class="metric-value">{% if attendance >= 80 %}Good{% elif attendance >= 50 %}Average{% else %}Low{% endif %}</div></div></div>
+                </a>
+                <a class="panel metric text-decoration-none" href="{% url 'employee_list' %}"><div class="metric-inner"><div class="metric-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0 1 6-6 6 6 0 0 1 6 6v2M16 4.2a4 4 0 0 1 0 7.6M17 14a5 5 0 0 1 4 5v2"/></svg></div><div><div class="metric-label">Total Employees</div><div class="metric-value">{{ total_all_employees }}</div></div></div></a>
+                <a class="panel metric text-decoration-none" href="{% url 'leave_list' %}"><div class="metric-inner"><div class="metric-icon green"><svg viewBox="0 0 24 24"><path d="M7 3v4M17 3v4M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1z"/><path d="m9 15 2 2 4-4"/></svg></div><div><div class="metric-label">Pending Leaves</div><div class="metric-value">{{ pending_leaves }}</div></div></div></a>
+                <a class="panel metric text-decoration-none" href="{% url 'task_list' %}"><div class="metric-inner"><div class="metric-icon pink"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m8 12 2.5 2.5L16 9"/></svg></div><div><div class="metric-label">Active Tasks</div><div class="metric-value">{{ pending_tasks|add:in_progress_tasks }}</div></div></div></a>
+
+                <section class="panel attendance-panel">
+                    <div class="panel-head"><h2>Attendance Overview</h2><a class="panel-link" href="{% url 'mark_attendance' %}">Manage attendance →</a></div>
+                    <div class="panel-body">
+                        <div class="quick-stats">
+                            <div class="quick-stat"><span><i class="dot" style="background:#7048e8"></i>Present today</span><strong>{{ present_today }}</strong></div>
+                            <div class="quick-stat"><span><i class="dot" style="background:#339af0"></i>Absent today</span><strong>{{ absent_today }}</strong></div>
+                            <div class="quick-stat"><span><i class="dot" style="background:#f43f6e"></i>On leave</span><strong>{{ leave_today }}</strong></div>
+                        </div>
+                        <div class="chart-wrap"><canvas id="attendanceChart"></canvas></div>
+                    </div>
+                </section>
+
+                <section class="panel task-panel">
+                    <div class="panel-head"><h2>Tasks By Status</h2></div>
+                    <div class="panel-body"><div class="chart-wrap"><canvas id="taskChart"></canvas></div></div>
+                </section>
+
+                <section class="panel department-panel">
+                    <div class="panel-head"><h2>Employees By Department</h2><a class="panel-link" href="{% url 'department_list' %}">Departments →</a></div>
+                    <div class="panel-body"><div class="chart-wrap compact"><canvas id="departmentChart"></canvas></div></div>
+                </section>
+
+                <section class="panel activity-panel">
+                    <div class="panel-head"><h2>Recent Activity</h2><a class="panel-link" href="{% url 'audit_logs' %}">View all →</a></div>
+                    <div class="panel-body activity-list">
+                        {% for activity in recent_activities %}
+                        <div class="activity-item"><div class="activity-badge">{{ activity.action|first }}</div><div class="activity-copy"><strong>{{ activity.object_name }}</strong><p>{{ activity.description }}</p><time>{{ activity.actor.username|default:'System' }} · {{ activity.created_at|timesince }} ago</time></div></div>
+                        {% empty %}<div class="empty">Recent activity will appear here.</div>{% endfor %}
+                    </div>
+                </section>
+
+                <section class="panel directory-panel" id="employee-directory">
+                    <div class="panel-head"><h2>Employee Directory</h2><a class="panel-link" href="{% url 'employee_list' %}">View all →</a></div>
+                    <div class="table-responsive">
+                        <table class="table table-vcenter"><thead><tr><th>Employee</th><th>Department</th><th>Status</th><th></th></tr></thead><tbody>
+                        {% for employee in employees %}<tr><td><div class="d-flex align-items-center gap-2">{% if employee.photo %}<img class="employee-photo" src="{{ employee.photo.url }}" alt="">{% else %}<span class="employee-avatar">{{ employee.name|first|upper }}</span>{% endif %}<div><strong>{{ employee.name }}</strong><div class="small text-secondary">{{ employee.email }}</div></div></div></td><td>{{ employee.department }}</td><td><span class="status {% if employee.status != 'Active' %}off{% endif %}">● {{ employee.status }}</span></td><td><a class="panel-link" href="{% url 'employee_detail' employee.id %}">Open</a></td></tr>{% empty %}<tr><td colspan="4" class="empty">No employees found.</td></tr>{% endfor %}
+                        </tbody></table>
+                    </div>
+                    {% if employees.has_other_pages %}<div class="panel-body d-flex justify-content-between"><span class="text-secondary small">Page {{ employees.number }} of {{ employees.paginator.num_pages }}</span><div>{% if employees.has_previous %}<a class="panel-link me-3" href="?page={{ employees.previous_page_number }}&search={{ request.GET.search|urlencode }}">← Previous</a>{% endif %}{% if employees.has_next %}<a class="panel-link" href="?page={{ employees.next_page_number }}&search={{ request.GET.search|urlencode }}">Next →</a>{% endif %}</div></div>{% endif %}
+                </section>
+
+                <section class="panel announcement-panel">
+                    <div class="panel-head"><h2>Announcements</h2><a class="panel-link" href="{% url 'announcement_list' %}">View all →</a></div>
+                    <div class="panel-body announcement-list">
+                        {% for item in recent_announcements %}<div class="announcement-item"><div class="activity-badge">!</div><div class="activity-copy"><strong>{{ item.title }}</strong><p>{{ item.message|truncatechars:90 }}</p><time>{{ item.created_at|date:'d M Y' }}</time></div></div>{% empty %}<div class="empty">No announcements yet.</div>{% endfor %}
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</div>
+
+{{ attendance_labels|json_script:"attendance-labels" }}
+{{ attendance_present|json_script:"attendance-present" }}
+{{ attendance_absent|json_script:"attendance-absent" }}
+{{ attendance_leave|json_script:"attendance-leave" }}
+{{ department_labels|json_script:"department-labels" }}
+{{ department_totals|json_script:"department-totals" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+<script>
+(() => {
+    const read = id => JSON.parse(document.getElementById(id).textContent);
+    Chart.defaults.color = '#91a0bd';
+    Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+    const grid = 'rgba(155,174,211,.14)';
+    new Chart(document.getElementById('attendanceChart'), {type:'bar',data:{labels:read('attendance-labels'),datasets:[
+        {label:'Present',data:read('attendance-present'),backgroundColor:'#7048e8',borderRadius:5},
+        {label:'Absent',data:read('attendance-absent'),backgroundColor:'#339af0',borderRadius:5},
+        {label:'Leave',data:read('attendance-leave'),backgroundColor:'#f43f6e',borderRadius:5}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:10,usePointStyle:true}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{precision:0},grid:{color:grid}}}}});
+    new Chart(document.getElementById('taskChart'), {type:'doughnut',data:{labels:['Pending','In Progress','Completed'],datasets:[{data:[{{ pending_tasks }},{{ in_progress_tasks }},{{ completed_tasks }}],backgroundColor:['#f59f00','#339af0','#20c997'],borderColor:'#0d192f',borderWidth:5}]},options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,usePointStyle:true,padding:18}}}}});
+    new Chart(document.getElementById('departmentChart'), {type:'doughnut',data:{labels:read('department-labels'),datasets:[{data:read('department-totals'),backgroundColor:['#63b3ed','#6c7be7','#8064d9','#a55dcc','#d45eb4','#e56391','#ee7180','#f59f00'],borderColor:'#0d192f',borderWidth:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'46%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,usePointStyle:true,padding:14}}}}});
+})();
+</script>
+</body>
+</html>

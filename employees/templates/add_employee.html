@@ -1,0 +1,129 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(32, 107, 196, 0.25), transparent 30%),
+                radial-gradient(circle at 80% 20%, rgba(245, 159, 0, 0.16), transparent 25%),
+                #0f172a;
+        }
+
+        .form-card {
+            background: rgba(17, 24, 39, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
+        }
+
+        .form-control {
+            background: #111827;
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .form-control:focus {
+            background: #111827;
+            color: #fff;
+            border-color: #206bc4;
+            box-shadow: 0 0 0 4px rgba(32, 107, 196, 0.18);
+        }
+
+        .brand-circle {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #206bc4, #4299e1);
+            color: white;
+            font-weight: 800;
+            font-size: 22px;
+        }
+
+        .section-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 24px 0;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body data-bs-theme="dark">
+    <div class="page">
+        {% include 'sidebar.html' %}
+        <div class="page-wrapper">
+            <div class="page page-center">
+                <div class="container container-tight py-4">
+            <div class="text-center mb-4">
+                <div class="brand-circle mx-auto mb-3">EM</div>
+                <h1 class="text-white mb-1">{{ title }}</h1>
+                <p class="text-secondary">Create a new employee profile</p>
+            </div>
+
+            <div class="card form-card">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Employee Name</label>
+                            {{ form.name }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Department</label>
+                            {{ form.department }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Employee Photo</label>
+                            {{ form.photo }}
+                            <div class="text-secondary mt-2">Upload PNG / JPG</div>
+                        </div>
+
+                        <div class="section-divider">
+                            <p class="text-secondary mb-3">
+                                Login Access (optional — leave blank if this employee doesn't need to log in)
+                            </p>
+
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                {{ form.username }}
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                {{ form.password }}
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            {{ button_text }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'home' %}" class="text-secondary">Back to Dashboard</a>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Task</title>
+    <link href="{% static 'tabler/css/tabler.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <style>
+        body { background:#0f172a; }
+        .confirm-card { max-width:560px;background:rgba(17,24,39,.96);border:1px solid rgba(255,255,255,.09);border-radius:22px;color:#f8fafc;box-shadow:0 24px 70px rgba(0,0,0,.35); }
+        .warning-icon { width:64px;height:64px;display:grid;place-items:center;border-radius:18px;background:rgba(239,68,68,.14);color:#ff6b7a;font-size:1.8rem;font-weight:800; }
+    </style>
+</head>
+<body data-bs-theme="dark">
+<div class="page">
+{% include 'sidebar.html' %}
+<div class="page-wrapper">
+<main class="page page-center min-vh-100 p-3">
+    <section class="card confirm-card w-100">
+        <div class="card-body p-4 p-md-5 text-center">
+            <div class="warning-icon mx-auto mb-3">!</div>
+            <div class="text-secondary">Delete task</div>
+            <h1 class="h2 text-white mt-1">{{ task.title }}</h1>
+            <p class="text-secondary">This task assigned to {{ task.employee.name }} will be permanently removed.</p>
+            <form method="post" class="d-flex flex-column flex-sm-row justify-content-center gap-2 mt-4">
+                {% csrf_token %}
+                <a href="{% url 'task_list' %}" class="btn btn-outline-light">Cancel</a>
+                <button type="submit" class="btn btn-danger">Delete Task</button>
+            </form>
+        </div>
+    </section>
+</main>
+</div>
+</div>
+<script src="{% static 'tabler/js/tabler.min.js' %}"></script>
+</body>
+</html>
