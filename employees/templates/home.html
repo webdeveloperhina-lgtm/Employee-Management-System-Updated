@@ -181,5 +181,6 @@
     new Chart(document.getElementById('departmentChart'), {type:'doughnut',data:{labels:read('department-labels'),datasets:[{data:read('department-totals'),backgroundColor:['#63b3ed','#6c7be7','#8064d9','#a55dcc','#d45eb4','#e56391','#ee7180','#f59f00'],borderColor:'#0d192f',borderWidth:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'46%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,usePointStyle:true,padding:14}}}}});
 })();
 </script>
+{% include 'footer.html' %}
 </body>
 </html>
